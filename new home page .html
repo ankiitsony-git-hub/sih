@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCIRRSS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+
+    /* Custom styles */
+    .header-tricolor {
+      background: linear-gradient(to right, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%);
+    }
+    .header-tricolor-bar { height: 4px; }
+
+    /* Fade-in animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Navbar hover underline */
+    nav a {
+      position: relative;
+    }
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      background: #2563eb;
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    /* Stat card hover */
+    .stat-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="header-tricolor-bar"></div>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <a href="home.html" class="flex items-center space-x-2">
+            <img src="logo-CCIRRSS.jpg" alt="CCIRRSS Logo" class="h-16"
+              onerror="this.onerror=null;this.src='https://placehold.co/200x60/FFFFFF/000080?text=CCIRRSS+Logo';">
+          </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center space-x-6">
+          <a href="home.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors"><b>Home</b></a>
+          <a href="about.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors"><b>About</b></a>
+          <a href="complaint.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors"><b>File Complaint</b></a>
+          <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors"><b>Emergency 24*7</b></a>
+          <a href="loginpage.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors"><b>Login</b></a>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+          <button class="mobile-menu-btn text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative bg-cover bg-center py-20"
+    style="background-image: url('https://sbmurban.org/them-assets/images/swachh-bharat-mission-progess-banner.jpg');">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="container mx-auto px-4 relative z-10 text-white">
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight fade-in">
+        CROWDSOURCED CIVIC ISSUE REPORTING AND RESOLUTION SYSTEM
+      </h1>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 sm:py-24">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+        <!-- Example Stat Card -->
+        <div class="stat-card fade-in bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-500">
+          <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+              fill="none" stroke="#3b82f6" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5.062C5.644 6.09 2 11.233 2 17h20c0-5.767-3.644-10.91-9-11.938zM12 2v3m-4 13h8m-8 4h8m-9-4v4m10-4v4"></path>
+              <path d="M12 5.062V22"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">Garbage Collection</h3>
+          <p class="counter text-4xl font-extrabold text-blue-600"
+            data-target="6712000" data-suffix="+">0</p>
+          <p class="text-gray-500 font-medium">Household Waste Collected</p>
+        </div>
+
+        <!-- Add more stat cards... -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-blue-800 text-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+      <p class="text-sm">&copy; 2025 Civic Issue Reporting And Resolution | Team Chronobytes</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Animate stats counters
+    document.addEventListener("DOMContentLoaded", () => {
+      const counters = document.querySelectorAll(".counter");
+      const speed = 150;
+
+      counters.forEach(counter => {
+        const animate = () => {
+          const value = +counter.getAttribute("data-target");
+          const data = +counter.innerText.replace(/\D/g, "");
+          const increment = value / speed;
+
+          if (data < value) {
+            counter.innerText = Math.ceil(data + increment) + (counter.dataset.suffix || "");
+            setTimeout(animate, 20);
+          } else {
+            counter.innerText = value + (counter.dataset.suffix || "");
+          }
+        };
+        animate();
+      });
+    });
+
+    // Fade-in on scroll
+    const faders = document.querySelectorAll(".fade-in");
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.2 });
+
+    faders.forEach(fader => appearOnScroll.observe(fader));
+
+    // Mobile nav toggle
+    const menuBtn = document.querySelector(".mobile-menu-btn");
+    const nav = document.querySelector("nav");
+
+    if (menuBtn) {
+      menuBtn.addEventListener("click", () => {
+        nav.classList.toggle("hidden");
+        nav.classList.toggle("flex");
+        nav.classList.toggle("flex-col");
+        nav.classList.toggle("bg-white");
+        nav.classList.toggle("shadow-lg");
+        nav.classList.toggle("p-4");
+      });
+    }
+  </script>
+</body>
+</html>

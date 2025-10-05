@@ -1,0 +1,92 @@
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter, Arial, sans-serif}
+
+body{
+  background: linear-gradient(135deg, #e88c50,  #56dd68 );
+  
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.login-container{
+  width:100%;
+  max-width:380px;
+  padding:20px;
+}
+
+.login-card{
+  background:white;
+  border-radius:12px;
+  padding:30px 25px;
+  box-shadow:0 8px 22px rgba(0,0,0,0.12);
+  text-align:center;
+}
+
+.logo img{
+  max-width:100px;
+  margin-bottom:12px;
+}
+
+h2{
+  margin-bottom:22px;
+  font-size:20px;
+  color:#0d6efd;
+}
+
+form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  text-align:left;
+}
+
+label{
+  font-size:14px;
+  font-weight:600;
+  color:#333;
+}
+
+input{
+  padding:10px 12px;
+  border:1px solid #ddd;
+  border-radius:6px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#0d6efd;
+  box-shadow:0 0 0 2px rgba(13,110,253,0.15);
+}
+
+button{
+  background:#0d6efd;
+  color:white;
+  border:none;
+  padding:12px;
+  border-radius:6px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{
+  background:#5e8dd2;
+}
+
+.extras{
+  margin-top:18px;
+  font-size:14px;
+  color:#555;
+}
+
+.extras a{
+  color:#0d6efd;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.extras a:hover{
+  text-decoration:underline;
+}

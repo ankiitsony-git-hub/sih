@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swachh Bharat Mission Progress Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for the tricolor effect */
+        .header-tricolor {
+            background: linear-gradient(to right, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%);
+        }
+        .header-tricolor-bar {
+             height: 4px;
+        }
+        .saffron-text { color: #FF9933; }
+        .green-text { color: #138808; }
+        .blue-text { color: #000080; }
+
+        .saffron-bg { background-color: #FF9933; }
+        .green-bg { background-color: #138808; }
+        .blue-bg { background-color: #000080; }
+
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header Section -->
+
+
+
+<header class="bg-blue-600"   >
+
+<div class="topbar">
+    <div></div>
+    <div  style="text-align: end;" >
+      <span  class="lang"></span>
+
+      <a href="#">Eng</a>
+      <a href="#">हिंदी</a>
+      
+    </div>
+  </div>
+
+
+
+
+</header>
+
+
+
+
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+
+
+
+
+
+
+
+        <div class="header-tricolor-bar"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+
+
+
+
+
+
+
+
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="#" class="flex items-center space-x-2">
+                         <img src="logo CCIRRSS.jpg" alt="SBM Logo" class="h-16"
+                         onerror="this.onerror=null;this.src='https://placehold.co/200x60/FFFFFF/000080?text=SBM+Logo';">
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-6">
+                    <div>
+      
+                    
+                   
+                    <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Home</a>  
+                    
+                    <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">About</a>
+                    <a href="#" class="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Progress</a>
+                    
+                    <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">File Complaint</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Emergency 24*7</a>
+                    
+                     <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">login</a>
+                                       <button class="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+
+ 
+
+
+                </nav>
+                
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button class="text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-cover bg-center py-20" style="background-image: url('https://sbmurban.org/them-assets/images/swachh-bharat-mission-progess-banner.jpg');">
+            <div class="absolute inset-0 bg-black/50"></div>
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-white">
+                <nav class="text-sm mb-4" aria-label="Breadcrumb">
+                    <ol class="list-none p-0 inline-flex">
+                        <li class="flex items-center">
+                            <a href="#" class="hover:underline">Home</a>
+                            <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
+                        </li>
+                        <li>
+                            <span class="font-medium">CROWDSOURCED CIVIC ISSUE REPORTING AND RESOLUTION SYSTEM</span>
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight"> CROWDSOURCED CIVIC ISSUE REPORTING AND RESOLUTION SYSTEM</h1>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+                    <!-- Card 1: Toilets Constructed -->
+                    <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5.062C5.644 6.09 2 11.233 2 17h20c0-5.767-3.644-10.91-9-11.938zM12 2v3m-4 13h8m-8 4h8m-9-4v4m10-4v4"></path><path d="M12 5.062V22"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Garbage collection</h3>
+                        <div class="space-y-4 mt-4">
+                            <div>
+                                <p class="text-4xl font-extrabold text-blue-600">67.12 <span class="text-2xl">Lakhs</span></p>
+                                <p class="text-gray-500 font-medium">Household Waste Collected </p>
+                            </div>
+                             <div class="border-t pt-4">
+                                <p class="text-4xl font-extrabold text-blue-600">6.54 <span class="text-2xl">Lakhs</span></p>
+                                <p class="text-gray-500 font-medium">location cleaned</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Door-to-Door Waste Collection -->
+                     <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-green-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Door-to-Door Waste Collection</h3>
+                        <p class="text-5xl font-extrabold text-green-600 mt-4">97%</p>
+                        <p class="text-gray-500 font-medium mt-1">of Wards Covered</p>
+                    </div>
+
+                    <!-- Card 3: ODF+ Cities -->
+                    <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Streetlights Installed</h3>
+                        <p class="text-5xl font-extrabold text-yellow-600 mt-4">4.5 lakhs</p>
+                        <p class="text-gray-500 font-medium mt-1"> Certified</p>
+                    </div>
+
+                    <!-- Card 4: ODF++ Cities -->
+                    <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-cyan-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-cyan-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path><path d="m15.5 9.5 2 2"></path><path d="m8.5 13.5 2 2"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Pot Holes</h3>
+                        <p class="text-5xl font-extrabold text-cyan-600 mt-4">1,691</p>
+                        <p class="text-gray-500 font-medium mt-1">Roadways Certified</p>
+                    </div>
+
+                     <!-- Card 5: Water+ Cities -->
+                    <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-indigo-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Water pipes</h3>
+                        <p class="text-5xl font-extrabold text-indigo-600 mt-4">1.3 Lakhs</p>
+                        <p class="text-gray-500 font-medium mt-1">Cities Certified</p>
+                    </div>
+
+                    <!-- Card 6: Waste Processing -->
+                    <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-rose-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Waste Processing</h3>
+                        <p class="text-5xl font-extrabold text-rose-600 mt-4">76%</p>
+                        <p class="text-gray-500 font-medium mt-1">of Total Waste</p>
+                    </div>
+                    
+                    <!-- Card 7: Source Segregation -->
+                    <div class="stat-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-orange-500">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Source Segregation</h3>
+                        <p class="text-5xl font-extrabold text-orange-600 mt-4">91%</p>
+                        <p class="text-gray-500 font-medium mt-1">of Wards Practicing</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="blue-bg text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- About -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4"> CROWDSOURCED CIVIC ISSUE REPORTING AND RESOLUTION SYSTEM</h4>
+                    <p class="text-gray-300 text-sm">
+                        
+                        
+                        
+                    The Crowdsourced Civic Issue Reporting and Resolution System is a digital platform designed to empower citizens and improve urban governance by providing a simple, transparent, and efficient way to address civic problems.
+                    </p>
+                <p>Through this system, citizens can report issues such as potholes, garbage accumulation, broken streetlights, water supply disruptions, or other public service concerns directly from their mobile phones or computers.</p>
+                
+                
+                
+                
+                
+                
+                </div>
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-white">About: CIRRS </a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Progress</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Guidelines</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
+                    <address class="not-italic text-sm text-gray-300 space-y-2">
+                        <p>Ministry of Housing and Urban Affairs</p>
+                        <p>Nirman Bhawan, New Delhi-110011</p>
+                        <p>Email: <a href="mailto:sbm.urban@gov.in" class="hover:text-white">sbm.urban@gov.in</a></p>
+                    </address>
+                </div>
+                <!-- Social Media -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.59 0 0 .59 0 1.325v21.351C0 23.41.59 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.735 0 1.325-.59 1.325-1.325V1.325C24 .59 23.41 0 22.675 0z"/></svg></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.223.085c.645 1.956 2.52 3.379 4.738 3.418a9.882 9.882 0 01-6.115 2.106c-.398 0-.79-.023-1.175-.068a13.963 13.963 0 007.548 2.212c9.058 0 14.01-7.502 14.01-14.01 0-.213 0-.425-.015-.637a9.935 9.935 0 002.45-2.54z"/></svg></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.784.305-1.457.718-2.13 1.393-.673.673-1.09 1.346-1.393 2.13-.298.765-.498 1.635-.56 2.913-.056 1.28-.072 1.686-.072 4.947s.016 3.667.072 4.947c.06 1.278.262 2.148.56 2.913.305.784.718 1.457 1.393 2.13.673.673 1.346 1.09 2.13 1.393.765.298 1.635.498 2.913.56 1.28.056 1.686.072 4.947.072s3.667-.016 4.947-.072c1.278-.06 2.148-.262 2.913-.56.784-.305 1.457-.718 2.13-1.393.673-.673 1.09-1.346 1.393-2.13.298-.765.498-1.635.56-2.913.056-1.28.072-1.686.072-4.947s-.016-3.667-.072-4.947c-.06-1.278-.262-2.148-.56-2.913-.305-.784-.718-1.457-1.393-2.13-.673-.673-1.346-1.09-2.13-1.393-.765-.298-1.635-.498-2.913-.56C15.667.015 15.26 0 12 0zm0 2.16c3.203 0 3.585.012 4.85.07 1.17.055 1.805.248 2.227.415.562.217.96.477 1.382.896.419.42.68.819.896 1.381.164.422.36 1.057.413 2.227.058 1.265.07 1.646.07 4.85s-.012 3.585-.07 4.85c-.055 1.17-.248 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.819.68-1.381.896-.422.164-1.057.36-2.227.413-1.265.058-1.646.07-4.85.07s-3.585-.012-4.85-.07c-1.17-.055-1.805-.248-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.68-.819-.896-1.381-.164-.422-.36-1.057-.413-2.227-.058-1.265-.07-1.646-.07-4.85s.012-3.585.07-4.85c.055-1.17.248-1.805.413-2.227.217-.562.477-.96.896-1.382.42-.419.819-.68 1.381-.896.422-.164 1.057-.36 2.227-.413C8.415 2.172 8.797 2.16 12 2.16zm0 5.188c-2.652 0-4.812 2.16-4.812 4.812s2.16 4.812 4.812 4.812 4.812-2.16 4.812-4.812-2.16-4.812-4.812-4.812zm0 7.82c-1.667 0-3.008-1.342-3.008-3.008s1.342-3.008 3.008-3.008 3.008 1.342 3.008 3.008-1.342 3.008-3.008 3.008zm6.362-7.85c-.767 0-1.388.62-1.388 1.388s.62 1.388 1.388 1.388 1.388-.62 1.388-1.388-.62-1.388-1.388-1.388z"/></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-blue-700 text-center text-sm text-gray-300">
+                <p>&copy; 2025 Civic Issue Reporting And Resolution. </p>
+                <p class="mt-1">Copyright : All Right Reserved : Team Chronobytes </p>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+</html>
+

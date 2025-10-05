@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>File a Complaint </title>
+  <link rel="stylesheet" href="complaintfile.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+ <a href="home page .html"   ><img src="logo CCIRRSS.jpg"  height="100" width="150"  ></a>
+
+
+
+      </div>
+      <nav>
+        <a href="home page .html">Home</a>
+        <a href="home page .html">About</a>
+        <a href="complaintfile.html" class="active">File Complaint</a>
+        <a href="AI dashboard.html">AI Dashboard</a>
+        <a href="emergency.html">24*7 Emergency</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h1>File a Complaint</h1>
+      <p>Please provide details of your complaint to help us resolve it quickly.</p>
+    </section>
+
+    <section class="form-section">
+      <form id="complaintForm">
+        <label>Complaint Title</label>
+        <input type="text" id="title" placeholder="Short title for the issue" required>
+
+        <label>Description</label>
+        <textarea id="description" placeholder="Describe the issue..." required></textarea>
+
+        <label>Category</label>
+        <select id="category" required>
+          <option value="">Select a category</option>
+          <option>Garbage / Waste</option>
+          <option>Water / Sanitation</option>
+          <option>Roads / Potholes</option>
+          <option>Street Lights</option>
+          <option>To Be Added</option>
+        </select>
+
+        <label>Department</label>
+        <select id="department" required>
+          <option value="">Select department</option>
+          <option>Municipal Corporation</option>
+          <option>Water Supply Board</option>
+          <option>Electricity Department</option>
+          <option>Public Works Department</option>
+        </select>
+
+        <label>Upload Photo</label>
+        <input type="file" id="photo" accept="image/*">
+
+        <label>Location</label>
+        <div class="location-box">
+          <input type="text" id="lat" placeholder="Latitude" readonly>
+          <input type="text" id="lng" placeholder="Longitude" readonly>
+          <button type="button" onclick="getLocation()">Get My Location</button>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Complaint</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 Team Chronobytes | Complaint & Issue Reporting System</p>
+    </div>
+  </footer>
+
+  <script src="complaintfile.js"></script>
+</body>
+</html>

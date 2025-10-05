@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>24×7 Emergency</title>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Chart.js (optional if you later add charts) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --card-radius:14px;
+    --muted:#6b7280;
+    --accent:#2563eb;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:linear-gradient(180deg,#f6fbff,#fff); color:#0f172a; -webkit-font-smoothing:antialiased;}
+
+  /* Top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:linear-gradient(90deg,#2563eb,#41bacc);color:white;box-shadow:0 6px 20px rgba(37,99,235,0.12)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand img{height:44px;border-radius:8px;object-fit:cover}
+  .brand h1{font-size:18px;margin:0;font-weight:700}
+  .controls{display:flex;gap:12px;align-items:center}
+
+  .container{max-width:1200px;margin:20px auto;padding:0 18px}
+
+  /* layout grid */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.98)); border-radius:var(--card-radius); padding:14px; box-shadow:0 8px 28px rgba(8,15,53,0.06);}
+
+  /* KPI row */
+  .kpi-row{grid-column:1 / -1;display:flex;gap:12px;flex-wrap:wrap}
+  .kpi{flex:1;min-width:180px;padding:12px;border-radius:12px;background:linear-gradient(90deg,#fff,#f7fbff);display:flex;align-items:center;gap:10px}
+  .kpi .icon{height:44px;width:44px;border-radius:10px;background:linear-gradient(135deg,#eaf2ff,#dbeafe);display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e3a8a}
+  .kpi .value{font-size:20px;font-weight:800}
+  .kpi .label{color:var(--muted);font-size:13px}
+
+  /* map */
+  #map{height:360px;border-radius:12px;overflow:hidden}
+  .left{grid-column:1 / span 8}
+  .right{grid-column:9 / span 4}
+
+  /* emergency form */
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  input[type="text"], input[type="email"], select, textarea, input[type="date"]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef6;background:white}
+  textarea{min-height:100px;resize:vertical}
+
+  /* table */
+  .table-wrap{overflow:auto;margin-top:12px}
+  table{width:100%;border-collapse:collapse}
+  th, td{padding:10px;text-align:left;border-bottom:1px solid #eef2f7;font-size:14px}
+  th{background:transparent;color:#374151;font-weight:700;position:sticky;top:0}
+  .badge{display:inline-block;padding:6px 8px;border-radius:999px;font-weight:700;font-size:12px}
+  .badge.filed{background:#fef3c7;color:#92400e}
+  .badge.processing{background:#d1fae5;color:#065f46}
+  .badge.completed{background:#dbeafe;color:#1e3a8a}
+
+  /* AI floating / SOS */
+  .ai-fab{position:fixed;right:18px;bottom:18px;background:linear-gradient(135deg,#06b6d4,#2563eb);color:white;border-radius:999px;padding:12px 16px;display:flex;gap:8px;align-items:center;box-shadow:0 8px 30px rgba(37,99,235,0.18);cursor:pointer;z-index:1100}
+  .ai-panel{position:fixed;right:18px;bottom:78px;width:360px;max-width:calc(100% - 36px);background:white;border-radius:12px;box-shadow:0 18px 40px rgba(2,6,23,0.2);overflow:hidden;display:none;flex-direction:column;z-index:1100}
+  .ai-panel.active{display:flex}
+  .ai-panel .header{padding:12px 14px;background:linear-gradient(90deg,#2563eb,#41bacc);color:white;font-weight:700}
+  .ai-panel .body{padding:12px;font-size:14px}
+  .ai-panel textarea{width:100%;min-height:80px;border-radius:8px;padding:8px;border:1px solid #e6eef6}
+
+  .sos-btn { position: fixed; right: 18px; bottom: 100px; z-index:1200; border: none; background: none; padding:0; cursor:pointer; }
+  .sos-img { width:96px; height:96px; border-radius:50%; box-shadow: 0 10px 30px rgba(239,68,68,0.25); animation: pulse 2s infinite; display:block; }
+  @keyframes pulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(239,68,68,0.0)); }
+    50% { transform: scale(1.06); filter: drop-shadow(0 12px 30px rgba(239,68,68,0.18)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(239,68,68,0.0)); }
+  }
+
+  /* actions & buttons */
+  .actions{display:flex;gap:8px;align-items:center}
+  .btn{padding:8px 12px;border-radius:8px;background:#2563eb;color:white;border:none;cursor:pointer;font-weight:700}
+  .btn.alt{background:#f3f4f6;color:#111;border:1px solid #e6eef6}
+
+  /* responsive */
+  @media(max-width:980px){
+    .left{grid-column:1 / -1}
+    .right{grid-column:1 / -1}
+    .form-row{grid-template-columns:1fr}
+    #map{height:260px}
+  }
+
+  /* theme blends (applied to body.background via JS) */
+  .theme-blue { --accent: #2563eb; background: linear-gradient(180deg,#f6fbff,#fff); }
+  .theme-green { --accent: #16a34a; background: linear-gradient(180deg,#f0fff4,#ebfbee); }
+  .theme-saffron { --accent: #f97316; background: linear-gradient(180deg,#fff7ed,#fff3e0); }
+  .theme-rainbow { --accent:#ef4444; background: linear-gradient(120deg,#ff6a00,#ee0979,#2575fc,#43e97b,#ffcc70); }
+
+  /* small helpers */
+  .muted{color:var(--muted)}
+  .mb12{margin-bottom:12px}
+</style>
+</head>
+
+<body class="theme-blue">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+     <a href="home page .html" ><img src="logo CCIRRSS.jpg"   alt="Logo" onerror="this.src='https://placehold.co/80x40/2563eb/fff?text=Logo'"></a>
+      <h1>24×7 Emergency </h1>
+    </div>
+
+    <div class="controls">
+      <label style="font-size:13px;color:rgba(255,255,255,0.9);margin-right:6px">Theme</label>
+      <select id="themeSelect" style="padding:6px;border-radius:6px;border:none">
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="saffron">Saffron</option>
+        <option value="rainbow">Rainbow</option>
+      </select>
+      <button class="btn" id="exportCsv">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+
+      <!-- KPI row -->
+      <div class="kpi-row card" style="grid-column:1 / -1">
+        <div class="kpi">
+          <div class="icon">🚨</div>
+          <div><div class="value"><span class="counter" data-target="212">0</span></div><div class="label">Active Incidents</div></div>
+        </div>
+        <div class="kpi">
+          <div class="icon">👷</div>
+          <div><div class="value"><span class="counter" data-target="128">0</span></div><div class="label">Active Responders</div></div>
+        </div>
+        <div class="kpi">
+          <div class="icon">✅</div>
+          <div><div class="value"><span class="counter" data-target="3879">0</span></div><div class="label">Resolved Today</div></div>
+        </div>
+        <div class="kpi">
+          <div class="icon">📍</div>
+          <div><div class="value"><span class="counter" data-target="34">0</span></div><div class="label">Hotspots</div></div>
+        </div>
+      </div>
+
+      <!-- Left column: map, form, table -->
+      <div class="left">
+
+        <!-- Map -->
+        <div class="card mb12">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h3 style="margin:0">Live Map — Incidents</h3>
+            <div class="actions">
+              <select id="mapFilter">
+                <option value="">Show all</option>
+                <option value="filed">Filed</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+              </select>
+              <button class="btn alt" id="refreshMap">Refresh</button>
+            </div>
+          </div>
+          <div id="map"></div>
+        </div>
+
+        <!-- Emergency form -->
+        <div class="card mb12">
+          <h3 style="margin:0 0 8px 0">Report Emergency</h3>
+          <form id="incidentForm">
+            <div class="form-row">
+              <input type="text" id="iTitle" placeholder="Short title" required>
+              <select id="iCategory" required>
+                <option value="">Category</option>
+                <option>Garbage</option><option>Roads</option><option>Water</option><option>Lighting</option>
+              </select>
+            </div>
+            <div class="form-row" style="margin-top:10px">
+              <input type="text" id="iName" placeholder="Your name (optional)">
+              <input type="email" id="iEmail" placeholder="Email (optional)">
+            </div>
+            <div style="margin-top:10px">
+              <textarea id="iDesc" placeholder="Describe the emergency..." required></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+              <button class="btn" type="button" onclick="useMyLocation()">Use My Location</button>
+              <input id="iPhoto" type="file" accept="image/*">
+            </div>
+            <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+              <input id="iLat" placeholder="Latitude" readonly style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef6">
+              <input id="iLng" placeholder="Longitude" readonly style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef6">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" type="submit">Submit Report</button>
+              <button class="btn alt" type="button" id="clearForm">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Recent incidents table -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:0">Recent Incidents</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="searchBox" placeholder="Search..." style="padding:8px;border-radius:8px;border:1px solid #e6eef6">
+              <button class="btn alt" id="downloadCsv">Download CSV</button>
+            </div>
+          </div>
+
+          <div class="table-wrap" id="tableWrap">
+            <table id="incTable">
+              <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div class="muted">Showing <span id="countDisplay">0</span> incidents</div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column: contacts, AI, quick actions -->
+      <div class="right">
+        <div class="card mb12">
+          <h4 style="margin:0 0 8px 0">Emergency Contacts (24×7)</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div><strong>Fire</strong> — 101</div>
+            <div><strong>Ambulance</strong> — 102</div>
+            <div><strong>Police</strong> — 100</div>
+            <div><strong>Municipal Helpline</strong> — 1800-111-222</div>
+            <div><strong>Disaster Control</strong> — 1800-222-333</div>
+          </div>
+        </div>
+
+        <div class="card mb12">
+          <h4 style="margin:0 0 8px 0">Quick Actions</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn" onclick="openNewIncident()">New Incident Form</button>
+            <button class="btn alt" onclick="alert('Dispatch simulated')">Dispatch Nearby</button>
+            <button class="btn alt" onclick="alert('Notify subscribers')">Notify Subscribers</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">AI Insights</h4>
+          <div style="font-size:13px;color:var(--muted)">Quick summary (demo):</div>
+          <div id="aiSummary" style="margin-top:8px;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #eef2f7">
+            Top category: <b id="topCategory">—</b><br>
+            Avg. response time: <b>~12 min</b><br>
+            Rising hotspots: <b id="hotspotList">—</b>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AI Floating UI -->
+  <div class="ai-fab" id="aiFab" title="AI Insights">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2v4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="6" width="18" height="12" rx="2" stroke="white" stroke-width="2"/><path d="M7 18v2h10v-2" stroke="white" stroke-width="2"/></svg>
+    <span style="font-weight:700">AI</span>
+  </div>
+
+  <div class="ai-panel" id="aiPanel">
+    <div class="header">AI Insights (Demo)</div>
+    <div class="body">
+      <div style="font-size:13px;color:var(--muted)">Ask the AI (demo). Type questions about incidents, hotspots, or worker performance.</div>
+      <textarea id="aiPrompt" placeholder="e.g. Which wards have rising garbage complaints?"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" id="aiAsk">Ask AI</button>
+        <button class="btn alt" id="aiClear">Clear</button>
+      </div>
+      <div id="aiResponse" style="margin-top:10px;background:#f8fafc;padding:8px;border-radius:8px;border:1px solid #eef2f7;min-height:60px"></div>
+    </div>
+  </div>
+
+  <!-- SOS floating image-only button -->
+  <button class="sos-btn" id="sosBtn" title="SOS — Send distress">
+    <img class="sos-img" src="assets/ai-icon.png" alt="SOS" onerror="this.src='https://placehold.co/96x96/ef4444/fff?text=SOS'">
+  </button>
+
+<script>
+/* ===========================
+   Demo data + utilities
+   =========================== */
+const incidents = [];
+const categories = ['Garbage','Roads','Water','Lighting'];
+const statuses = ['filed','processing','completed'];
+
+/* create some fake incidents for demo */
+(function gen(){
+  const now = Date.now();
+  for(let i=1;i<=80;i++){
+    const cat = categories[Math.floor(Math.random()*categories.length)];
+    const status = statuses[Math.floor(Math.random()*statuses.length)];
+    const daysAgo = Math.floor(Math.random()*10);
+    const date = new Date(now - daysAgo*24*3600*1000).toISOString().slice(0,10);
+    incidents.push({
+      id: 'E' + (1000 + i),
+      title: `${cat} issue #${i}`,
+      category: cat,
+      date,
+      status,
+      lat: 28.6 + Math.random()*0.25,
+      lng: 77.1 + Math.random()*0.25
+    });
+  }
+})();
+
+/* counters animation */
+function animateCounters(){
+  document.querySelectorAll('.counter').forEach(el=>{
+    const target = +el.dataset.target;
+    let cur = 0;
+    const step = Math.max(1, Math.floor(target/80));
+    const timer = setInterval(()=>{ cur += step; if(cur>=target){ el.textContent = target; clearInterval(timer); } else el.textContent = cur; }, 16);
+  });
+}
+
+/* ===========================
+   Table rendering + pagination
+   =========================== */
+let filtered = [...incidents];
+let currentPage = 1, perPage = 8;
+
+function renderTable(){
+  const tbody = document.querySelector('#incTable tbody');
+  tbody.innerHTML = '';
+  const start = (currentPage-1)*perPage;
+  const rows = filtered.slice(start, start+perPage);
+  for(const r of rows){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.id}</td>
+      <td>${r.title}</td>
+      <td>${r.category}</td>
+      <td>${r.date}</td>
+      <td><span class="badge ${r.status}">${r.status}</span></td>
+      <td><button class="btn alt" onclick="viewIncident('${r.id}')">View</button></td>`;
+    tbody.appendChild(tr);
+  }
+  document.getElementById('countDisplay').textContent = filtered.length;
+  renderPagination();
+}
+
+/* pagination */
+function renderPagination(){
+  const pages = Math.max(1, Math.ceil(filtered.length/perPage));
+  const pg = document.getElementById('pagination'); pg.innerHTML='';
+  for(let i=1;i<=pages;i++){
+    const b = document.createElement('button');
+    b.textContent = i;
+    b.style.padding='6px 8px'; b.style.borderRadius='6px'; b.style.border='none'; b.style.cursor='pointer';
+    if(i===currentPage){ b.style.background='#1e3a8a'; b.style.color='white'; } else { b.className='btn alt'; }
+    b.addEventListener('click',()=>{ currentPage=i; renderTable(); });
+    pg.appendChild(b);
+  }
+}
+
+/* search + filter */
+document.getElementById('searchBox').addEventListener('input', ()=>{ applyFilters(); });
+document.getElementById('mapFilter').addEventListener('change', ()=>{ applyFilters(); });
+
+function applyFilters(){
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const status = document.getElementById('mapFilter').value;
+  filtered = incidents.filter(r=>{
+    if(status && r.status !== status) return false;
+    if(q && !(r.id.toLowerCase().includes(q) || r.title.toLowerCase().includes(q) || r.category.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  currentPage = 1;
+  renderTable();
+  updateMapMarkers(filtered.slice(0,200));
+}
+
+/* view incident */
+function viewIncident(id){
+  const item = incidents.find(i=>i.id===id);
+  if(!item) return alert('Not found');
+  alert(`${item.id}\n${item.title}\nCategory: ${item.category}\nStatus: ${item.status}\nDate: ${item.date}`);
+}
+
+/* ===========================
+   CSV export
+   =========================== */
+function exportCsv(rows, filename='incidents.csv'){
+  const csv = [ ['id','title','category','date','status','lat','lng'], ...rows.map(r=>[r.id,r.title,r.category,r.date,r.status,r.lat || '',r.lng || '']) ]
+    .map(r => r.map(c => `"${(''+c).replace(/"/g,'""')}"`).join(',')).join('\\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+}
+document.getElementById('downloadCsv').addEventListener('click', ()=> exportCsv(filtered));
+document.getElementById('exportCsv').addEventListener('click', ()=> exportCsv(filtered));
+
+/* ===========================
+   Map (Leaflet)
+   =========================== */
+let map, markersLayer;
+function initMap(){
+  map = L.map('map', {zoomControl:true}).setView([28.64,77.23], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+  updateMapMarkers(incidents.slice(0,200));
+}
+function updateMapMarkers(data){
+  markersLayer.clearLayers();
+  data.forEach(i=>{
+    const color = i.status==='completed' ? '#10b981' : i.status==='processing' ? '#f59e0b' : '#ef4444';
+    const marker = L.circleMarker([i.lat,i.lng], { radius:6, fillColor:color, color:'#fff', weight:1, fillOpacity:0.9 });
+    marker.bindPopup(`<b>${i.id}</b><br>${i.title}<br>${i.category}<br><small>${i.date} • ${i.status}</small>`);
+    markersLayer.addLayer(marker);
+  });
+  if (markersLayer.getLayers().length) {
+    try { map.fitBounds(markersLayer.getBounds(), {maxZoom:13}); } catch(e){}
+  }
+}
+document.getElementById('refreshMap').addEventListener('click', ()=> updateMapMarkers(filtered.slice(0,200)));
+
+/* ===========================
+   Incident form behavior
+   =========================== */
+document.getElementById('incidentForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const title = document.getElementById('iTitle').value.trim();
+  const cat = document.getElementById('iCategory').value;
+  const desc = document.getElementById('iDesc').value.trim();
+  const lat = document.getElementById('iLat').value || (28.64 + Math.random()*0.1).toFixed(6);
+  const lng = document.getElementById('iLng').value || (77.23 + Math.random()*0.1).toFixed(6);
+  const id = 'E' + (1000 + incidents.length + 1);
+  const newInc = { id, title: title || 'Untitled', category: cat || 'Other', date: new Date().toISOString().slice(0,10), status: 'filed', lat: +lat, lng: +lng };
+  incidents.unshift(newInc); applyFilters(); updateAiSummary();
+  alert('Incident submitted: ' + id);
+  document.getElementById('incidentForm').reset();
+});
+
+/* use geolocation to fill fields */
+function useMyLocation(){
+  if(!navigator.geolocation) return alert('Geolocation not supported');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    document.getElementById('iLat').value = pos.coords.latitude.toFixed(6);
+    document.getElementById('iLng').value = pos.coords.longitude.toFixed(6);
+  }, err => alert('Unable to get location: ' + err.message));
+}
+document.getElementById('clearForm').addEventListener('click', ()=> document.getElementById('incidentForm').reset());
+
+/* ===========================
+   Theme switch
+   =========================== */
+document.getElementById('themeSelect').addEventListener('change', e=>{
+  document.body.classList.remove('theme-blue','theme-green','theme-saffron','theme-rainbow');
+  const v = e.target.value;
+  document.body.classList.add(v==='blue' ? 'theme-blue' : v==='green' ? 'theme-green' : v==='saffron' ? 'theme-saffron' : 'theme-rainbow');
+});
+
+/* ===========================
+   SOS button behavior (image-only)
+   =========================== */
+document.getElementById('sosBtn').addEventListener('click', ()=>{
+  const ok = confirm('Send SOS alert with your current location to responders?');
+  if(!ok) return;
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
+      const id = 'E' + (1000 + incidents.length + 1);
+      const inc = { id, title: 'SOS Alert', category: 'Emergency', date: new Date().toISOString().slice(0,10), status: 'filed', lat:+lat, lng:+lng };
+      incidents.unshift(inc); applyFilters(); updateAiSummary();
+      alert('SOS sent! Responders alerted. Location: ' + lat + ', ' + lng);
+    }, err => alert('Could not get location: ' + err.message));
+  } else {
+    alert('Geolocation not available');
+  }
+});
+
+/* ===========================
+   AI panel (demo)
+   =========================== */
+document.getElementById('aiFab').addEventListener('click', ()=> {
+  document.getElementById('aiPanel').classList.toggle('active');
+});
+document.getElementById('aiAsk').addEventListener('click', ()=>{
+  const q = document.getElementById('aiPrompt').value.trim();
+  if(!q) return document.getElementById('aiResponse').textContent = 'Please type a question for the AI.';
+  // demo analysis: return top category and count
+  const counts = {};
+  incidents.forEach(i => counts[i.category] = (counts[i.category]||0)+1);
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('aiResponse').innerHTML = `<strong>AI (demo):</strong><br>Top category: <b>${top ? top[0] : 'N/A'}</b> with <b>${top ? top[1] : 0}</b> incidents.`;
+});
+document.getElementById('aiClear').addEventListener('click', ()=> { document.getElementById('aiPrompt').value=''; document.getElementById('aiResponse').textContent=''; });
+
+/* ===========================
+   AI summary + init
+   =========================== */
+function updateAiSummary(){
+  const counts = {};
+  incidents.forEach(i => counts[i.category] = (counts[i.category]||0)+1);
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]).join(', ');
+  document.getElementById('topCategory').textContent = Object.keys(counts).length ? Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0] : '-';
+  document.getElementById('hotspotList').textContent = top || '-';
+}
+
+/* ===========================
+   View helpers
+   =========================== */
+function openNewIncident(){ window.scrollTo({top:500,behavior:'smooth'}); document.getElementById('iTitle').focus(); }
+function init(){
+  animateCounters();
+  renderTable();
+  initMap();
+  updateAiSummary();
+}
+window.addEventListener('load', init);
+
+</script>
+</body>
+</html>

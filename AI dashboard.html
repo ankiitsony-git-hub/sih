@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Analytics Dashboard</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Leaflet for map placeholder -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+4H0p6rGh2q3eF2q3b5Z0fQ+Q1sGk2V7g/6bQbZ0E=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jQm9o6x1r7j8QG0mXk6bSh6bIuS/8b2d8H6Hk8s=" crossorigin=""></script>
+
+  <style>
+    :root{
+      --card-radius:14px;
+      --glass: rgba(255,255,255,0.7);
+      --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg,#f6fbff,#fff);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* topbar */
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;padding:12px 20px;
+      gap:12px;background:linear-gradient(90deg,#2563eb,#41bacc);color:white;
+      box-shadow:0 6px 20px rgba(37,99,235,0.12);
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand img{height:44px;border-radius:8px}
+    .brand h1{font-size:18px;margin:0;font-weight:700}
+
+    /* layout */
+    .container{max-width:1200px;margin:20px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,250,255,0.95));
+      border-radius:var(--card-radius); padding:16px;
+      box-shadow:0 8px 28px rgba(8,15,53,0.06);
+      backdrop-filter: blur(6px);
+    }
+
+    /* KPI row */
+    .kpi-row{grid-column:1 / -1;display:flex;gap:14px;flex-wrap:wrap}
+    .kpi{flex:1;min-width:200px;padding:14px;border-radius:12px;background:linear-gradient(90deg,#fff,#f7fbff);display:flex;align-items:center;gap:12px}
+    .kpi .icon{height:48px;width:48px;border-radius:10px;background:linear-gradient(135deg,#eaf2ff,#dbeafe);display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e3a8a}
+    .kpi .value{font-size:20px;font-weight:800}
+    .kpi .label{color:var(--muted);font-size:13px}
+
+    /* left column (charts & filters) */
+    .left{grid-column:1 / span 8}
+    .right{grid-column:9 / span 4}
+
+    /* charts */
+    .charts{display:flex;flex-direction:column;gap:14px}
+    .chart-row{display:flex;gap:14px}
+    .chart-card{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfdff)}
+
+    /* filters */
+    .filters{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .filters select, .filters input{padding:8px 10px;border-radius:8px;border:1px solid #e6eef6;background:white}
+
+    /* table */
+    .table-wrap{overflow:auto;margin-top:12px}
+    table{width:100%;border-collapse:collapse}
+    th, td{padding:10px;text-align:left;border-bottom:1px solid #eef2f7;font-size:14px}
+    th{background:transparent;color:#374151;font-weight:700;position:sticky;top:0}
+    .badge{display:inline-block;padding:6px 8px;border-radius:999px;font-weight:700;font-size:12px}
+    .badge.filed{background:#fef3c7;color:#92400e}
+    .badge.processing{background:#d1fae5;color:#065f46}
+    .badge.completed{background:#dbeafe;color:#1e3a8a}
+
+    /* map */
+    #map{height:320px;border-radius:12px;overflow:hidden}
+
+    /* AI widget */
+    .ai-fab{position:fixed;right:18px;bottom:18px;background:linear-gradient(135deg,#06b6d4,#2563eb);color:white;border-radius:999px;padding:12px 16px;display:flex;gap:8px;align-items:center;box-shadow:0 8px 30px rgba(37,99,235,0.18);cursor:pointer}
+    .ai-panel{position:fixed;right:18px;bottom:78px;width:360px;max-width:calc(100% - 36px);background:white;border-radius:12px;box-shadow:0 18px 40px rgba(2,6,23,0.2);overflow:hidden;display:none;flex-direction:column}
+    .ai-panel.active{display:flex}
+    .ai-panel .header{padding:12px 14px;background:linear-gradient(90deg,#2563eb,#41bacc);color:white;font-weight:700}
+    .ai-panel .body{padding:12px;font-size:14px}
+    .ai-panel textarea{width:100%;min-height:80px;border-radius:8px;padding:8px;border:1px solid #e6eef6}
+
+    /* actions */
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn{padding:8px 12px;border-radius:8px;background:#2563eb;color:white;border:none;cursor:pointer;font-weight:700}
+    .btn.alt{background:#f3f4f6;color:#111;border:1px solid #e6eef6}
+
+    /* table controls */
+    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+    .page-nav{display:flex;gap:6px;align-items:center}
+
+    /* responsive */
+    @media(max-width:980px){
+      .left{grid-column:1 / -1}
+      .right{grid-column:1 / -1}
+      .kpi{min-width:48%}
+      #map{height:240px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+     <a href="home page .html" ><img src="logo CCIRRSS.jpg" alt="Logo" onerror="this.src='https://placehold.co/80x40/2563eb/fff?text=Logo'"></a>
+      <h1>AI Dashboard</h1>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center">
+      <div>
+        <label style="font-size:12px;color:#f8fafc">Theme</label>
+        <select id="themeSelect" style="padding:6px;border-radius:6px;border:none">
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="saffron">Saffron</option>
+          <option value="rainbow">Rainbow</option>
+        </select>
+      </div>
+      <div>
+        <button class="btn" id="btnExportCsv">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+
+      <!-- KPI row -->
+      <div class="kpi-row" style="grid-column:1 / -1">
+        <div class="card kpi">
+          <div class="icon">📄</div>
+          <div>
+            <div class="value"><span class="counter" data-target="4521">0</span></div>
+            <div class="label">Complaints Filed</div>
+          </div>
+        </div>
+
+        <div class="card kpi">
+          <div class="icon">🔧</div>
+          <div>
+            <div class="value"><span class="counter" data-target="3879">0</span></div>
+            <div class="label">Resolved</div>
+          </div>
+        </div>
+
+        <div class="card kpi">
+          <div class="icon">👷</div>
+          <div>
+            <div class="value"><span class="counter" data-target="128">0</span></div>
+            <div class="label">Active Workers</div>
+          </div>
+        </div>
+
+        <div class="card kpi">
+          <div class="icon">📍</div>
+          <div>
+            <div class="value"><span class="counter" data-target="212">0</span></div>
+            <div class="label">Hotspots</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Left: charts + table -->
+      <div class="left">
+
+        <!-- Filters -->
+        <div class="card filters fade-in">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div class="filters">
+              <select id="filterStatus">
+                <option value="">All Status</option>
+                <option value="filed">Filed</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+              </select>
+
+              <select id="filterCategory">
+                <option value="">All Categories</option>
+                <option>Garbage</option>
+                <option>Roads</option>
+                <option>Water</option>
+                <option>Lighting</option>
+              </select>
+
+              <input type="date" id="fromDate">
+              <input type="date" id="toDate">
+            </div>
+
+            <div class="actions">
+              <button class="btn" id="btnApply">Apply</button>
+              <button class="btn alt" id="btnReset">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="card charts fade-in" style="margin-top:12px">
+          <div class="chart-row">
+            <div class="chart-card" style="min-width:320px">
+              <h4 style="margin:0 0 8px 0">Complaints by Category</h4>
+              <canvas id="catChart" height="200"></canvas>
+            </div>
+
+            <div class="chart-card" style="min-width:320px">
+              <h4 style="margin:0 0 8px 0">Resolution Trend (Last 7 days)</h4>
+              <canvas id="trendChart" height="200"></canvas>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <h4 style="margin:0 0 8px 0">Map (Heatmap / Markers)</h4>
+            <div id="map" class="card" style="padding:0"></div>
+          </div>
+        </div>
+
+
+       
+
+        <!-- Table -->
+        <div class="card fade-in" style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h4 style="margin:0">Recent Complaints</h4>
+            <div class="controls">
+              <input id="searchBox" placeholder="Search by text or id" style="padding:8px;border-radius:8px;border:1px solid #e6eef6">
+              <div class="page-nav" id="pagination"></div>
+            </div>
+          </div>
+
+          <div class="table-wrap" id="tableWrap">
+            <table id="complaintsTable">
+              <thead>
+                <tr><th>ID</th><th>Title</th><th>Category</th><th>Dept</th><th>Date</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: worker leaderboard + AI -->
+      <div class="right">
+
+        <div class="card fade-in">
+          <h4>Top Workers</h4>
+          <ol id="workerList" style="margin-top:12px;padding-left:16px"></ol>
+        </div>
+
+        <div class="card fade-in" style="margin-top:12px">
+          <h4>Quick Actions</h4>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+            <button class="btn" onclick="openNewComplaint()">New Complaint</button>
+            <button class="btn alt" onclick="openAssign()">Assign Task</button>
+            <button class="btn alt" onclick="openReport()">Export Report</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AI Floating UI -->
+  <div class="ai-fab" id="aiFab" title="AI Insights">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="transform:translateY(-1px)">
+      <path d="M12 2v4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="3" y="6" width="18" height="12" rx="2" stroke="white" stroke-width="2"/>
+      <path d="M7 18v2h10v-2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span style="font-weight:700">AI</span>
+  </div>
+
+  <div class="ai-panel" id="aiPanel">
+    <div class="header">AI Insights </div>
+    <div class="body">
+      <div style="font-size:13px;color:var(--muted)">Ask the AI (placeholder). Type questions about complaints, hotspots, or worker performance.</div>
+      <textarea id="aiPrompt" placeholder="e.g. Which wards have rising garbage complaints?"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" id="aiAsk">Ask AI</button>
+        <button class="btn alt" id="aiClear">Clear</button>
+      </div>
+      <div id="aiResponse" style="margin-top:10px;background:#f8fafc;padding:8px;border-radius:8px;border:1px solid #eef2f7;min-height:60px"></div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Demo dataset (fake)
+     ***********************/
+    const complaints = [];
+    const categories = ['Garbage','Roads','Water','Lighting'];
+    const depts = {
+      'Garbage':'Municipal Corporation',
+      'Roads':'Public Works Department',
+      'Water':'Water Supply Board',
+      'Lighting':'Electricity Department'
+    };
+    const statuses = ['filed','processing','completed'];
+
+    // generate fake complaints
+    (function generate(){
+      const now = Date.now();
+      for(let i=1;i<=120;i++){
+        const cat = categories[Math.floor(Math.random()*categories.length)];
+        const status = statuses[Math.floor(Math.random()*statuses.length)];
+        const daysAgo = Math.floor(Math.random()*20);
+        const date = new Date(now - daysAgo*24*3600*1000);
+        complaints.push({
+          id: 'C' + (1000 + i),
+          title: `${cat} issue #${i}`,
+          category: cat,
+          dept: depts[cat],
+          date: date.toISOString().slice(0,10),
+          status,
+          lat: 28.6 + Math.random()*0.2,
+          lng: 77.2 + Math.random()*0.2,
+          worker: 'W' + (100 + Math.floor(Math.random()*10))
+        });
+      }
+    })();
+
+    /***********************
+     * COUNTERS (animated)
+     ***********************/
+    function animateCounters(){
+      document.querySelectorAll('.counter').forEach(el=>{
+        const target = +el.dataset.target;
+        let current = 0;
+        const step = Math.max(1, Math.floor(target/100));
+        const timer = setInterval(()=>{
+          current += step;
+          if(current >= target){ el.textContent = target; clearInterval(timer); }
+          else el.textContent = current;
+        }, 12);
+      });
+    }
+
+    /***********************
+     * CHARTS
+     ***********************/
+    let catChart, trendChart;
+    function buildCharts(filtered){
+      // category counts
+      const counts = {};
+      categories.forEach(c => counts[c]=0);
+      for(const row of filtered){ counts[row.category] = (counts[row.category]||0)+1; }
+      const catData = Object.values(counts);
+      if(catChart) catChart.data.datasets[0].data = catData, catChart.update();
+      else {
+        const ctx = document.getElementById('catChart').getContext('2d');
+        catChart = new Chart(ctx, {
+          type:'doughnut',
+          data:{labels:categories,datasets:[{data:catData,backgroundColor:['#3b82f6','#10b981','#f59e0b','#06b6d4']}]},
+          options:{plugins:{legend:{position:'bottom'}}}
+        });
+      }
+
+      // trend (last 7 days resolved)
+      const days = [];
+      for(let d=6;d>=0;d--){
+        const dt = new Date(); dt.setDate(dt.getDate()-d);
+        days.push(dt.toISOString().slice(0,10));
+      }
+      const trendData = days.map(day => filtered.filter(r=>r.date===day && r.status==='completed').length);
+      if(trendChart) trendChart.data.datasets[0].data = trendData, trendChart.data.labels = days, trendChart.update();
+      else {
+        const ctx2 = document.getElementById('trendChart').getContext('2d');
+        trendChart = new Chart(ctx2, {
+          type:'line',
+          data:{labels:days,datasets:[{label:'Resolved',data:trendData,fill:true,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.12)'}]},
+          options:{plugins:{legend:{display:false}}}
+        });
+      }
+    }
+
+    /***********************
+     * MAP (Leaflet)
+     ***********************/
+    let map, markers;
+    function initMap(){
+      map = L.map('map',{zoomControl:false}).setView([28.65,77.25], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+      markers = L.layerGroup().addTo(map);
+      updateMap(complaints.slice(0,50));
+    }
+    function updateMap(data){
+      markers.clearLayers();
+      data.forEach(r=>{
+        const m = L.circleMarker([r.lat,r.lng],{radius:6,fillColor: r.status==='completed' ? '#10b981' : r.status==='processing' ? '#f59e0b' : '#ef4444', color:'#fff', weight:1, fillOpacity:0.9});
+        m.bindPopup(`<b>${r.id}</b><br>${r.title}<br>${r.category}`);
+        markers.addLayer(m);
+      });
+      if(data.length) map.fitBounds(markers.getBounds(),{maxZoom:13});
+    }
+
+    /***********************
+     * TABLE & FILTERS
+     ***********************/
+    let currentPage = 1, perPage = 10, filteredData = [...complaints];
+
+    function renderTable(){
+      const tbody = document.querySelector('#complaintsTable tbody');
+      tbody.innerHTML='';
+      const start = (currentPage-1)*perPage;
+      const pageRows = filteredData.slice(start, start+perPage);
+      for(const r of pageRows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.id}</td>
+          <td>${r.title}</td>
+          <td>${r.category}</td>
+          <td>${r.dept}</td>
+          <td>${r.date}</td>
+          <td><span class="badge ${r.status}">${r.status}</span></td>
+          <td><button class="btn alt" onclick="viewDetail('${r.id}')">View</button></td>`;
+        tbody.appendChild(tr);
+      }
+      renderPagination();
+    }
+
+    function renderPagination(){
+      const total = filteredData.length;
+      const pages = Math.max(1, Math.ceil(total/perPage));
+      const pg = document.getElementById('pagination');
+      pg.innerHTML='';
+      for(let i=1;i<=pages;i++){
+        const b = document.createElement('button');
+        b.textContent = i;
+        b.style.padding='6px 8px';
+        b.style.borderRadius='6px';
+        b.style.border='none';
+        b.style.cursor='pointer';
+        if(i===currentPage) { b.style.background='#1e3a8a'; b.style.color='white'; }
+        else b.className='btn alt';
+        b.addEventListener('click',()=>{ currentPage=i; renderTable(); });
+        pg.appendChild(b);
+      }
+    }
+
+    function applyFilters(){
+      const status = document.getElementById('filterStatus').value;
+      const category = document.getElementById('filterCategory').value;
+      const from = document.getElementById('fromDate').value;
+      const to = document.getElementById('toDate').value;
+      const search = document.getElementById('searchBox')?.value?.toLowerCase?.() || '';
+
+      filteredData = complaints.filter(r=>{
+        if(status && r.status!==status) return false;
+        if(category && r.category!==category) return false;
+        if(from && r.date < from) return false;
+        if(to && r.date > to) return false;
+        if(search){
+          if(!(r.id.toLowerCase().includes(search) || r.title.toLowerCase().includes(search) || r.category.toLowerCase().includes(search))) return false;
+        }
+        return true;
+      });
+      currentPage = 1;
+      renderTable();
+      buildCharts(filteredData);
+      updateMap(filteredData.slice(0,80));
+    }
+
+    document.getElementById('btnApply').addEventListener('click',applyFilters);
+    document.getElementById('btnReset').addEventListener('click',()=>{
+      document.getElementById('filterStatus').value=''; document.getElementById('filterCategory').value=''; document.getElementById('fromDate').value=''; document.getElementById('toDate').value=''; document.getElementById('searchBox').value=''; filteredData=[...complaints]; currentPage=1; renderTable(); buildCharts(filteredData); updateMap(filteredData);
+    });
+    document.getElementById('searchBox').addEventListener('input',()=>{ applyFilters(); });
+
+    /***********************
+     * WORKER LIST
+     ***********************/
+    function renderWorkers(){
+      const counts = {};
+      complaints.forEach(r=>{ counts[r.worker] = (counts[r.worker]||0)+1; });
+      const arr = Object.keys(counts).map(k=>({id:k,count:counts[k]})).sort((a,b)=>b.count-a.count).slice(0,6);
+      const ol = document.getElementById('workerList');
+      ol.innerHTML='';
+      arr.forEach(w=>{ const li = document.createElement('li'); li.textContent = `${w.id} — ${w.count} resolved`; ol.appendChild(li); });
+    }
+
+    /***********************
+     * UTILITIES
+     ***********************/
+    function viewDetail(id){
+      const item = complaints.find(c=>c.id===id);
+      alert(`${item.id}\\n${item.title}\\n${item.category}\\nStatus: ${item.status}\\nDate: ${item.date}`);
+    }
+
+    function openNewComplaint(){ alert('Open New Complaint modal (wire to form)'); }
+    function openAssign(){ alert('Open Assign Worker modal'); }
+    function openReport(){ alert('Exporting report...'); }
+
+    /***********************
+     * CSV Export
+     ***********************/
+    function exportCsv(){
+      const rows = [['id','title','category','dept','date','status','lat','lng']];
+      filteredData.forEach(r=> rows.push([r.id,r.title,r.category,r.dept,r.date,r.status,r.lat,r.lng]));
+      const csv = rows.map(r=> r.map(c=> `"${(''+c).replace(/"/g,'""')}"`).join(',')).join('\\n');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'}), url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='complaints.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+    document.getElementById('btnExportCsv').addEventListener('click', exportCsv);
+
+    /***********************
+     * THEME SWITCH (color blending)
+     ***********************/
+    document.getElementById('themeSelect').addEventListener('change', (e)=>{
+      const theme = e.target.value;
+      if(theme==='blue'){
+        document.documentElement.style.setProperty('--primary','#2563eb');
+        document.body.style.background = 'linear-gradient(180deg,#f6fbff,#fff)';
+      } else if(theme==='green'){
+        document.documentElement.style.setProperty('--primary','#16a34a');
+        document.body.style.background = 'linear-gradient(180deg,#f0fff4,#ebfbee)';
+      } else if(theme==='saffron'){
+        document.documentElement.style.setProperty('--primary','#f97316');
+        document.body.style.background = 'linear-gradient(180deg,#fff7ed,#fff3e0)';
+      } else if(theme==='rainbow'){
+        document.documentElement.style.setProperty('--primary','#ef4444');
+        document.body.style.background = 'linear-gradient(120deg,#ff6a00,#ee0979,#2575fc,#43e97b,#ffcc70)';
+      }
+      // quick accent update for KPI icons
+      document.querySelectorAll('.icon').forEach(el => { el.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5))'; });
+    });
+
+    /***********************
+     * AI PANEL (placeholder)
+     ***********************/
+    document.getElementById('aiFab').addEventListener('click', ()=>{
+      document.getElementById('aiPanel').classList.toggle('active');
+    });
+    document.getElementById('aiAsk').addEventListener('click', ()=>{
+      const q = document.getElementById('aiPrompt').value.trim();
+      if(!q){ document.getElementById('aiResponse').textContent = 'Please type a question for AI.'; return; }
+      // Demo: simple analysis (no external AI). Replace with real AI API.
+      const hotspots = {};
+      filteredData.forEach(r=> hotspots[r.category] = (hotspots[r.category]||0)+1);
+      let best = Object.entries(hotspots).sort((a,b)=>b[1]-a[1])[0];
+      document.getElementById('aiResponse').innerHTML = `<strong>AI (demo) answer:</strong><br>Top category currently: <b>${best ? best[0] : 'N/A'}</b> with <b>${best ? best[1] : 0}</b> reports.`;
+    });
+    document.getElementById('aiClear').addEventListener('click', ()=>{
+      document.getElementById('aiPrompt').value=''; document.getElementById('aiResponse').textContent='';
+    });
+
+    /***********************
+     * INIT
+     ***********************/
+    animateCounters();
+    buildCharts(complaints);
+    initMap();
+    renderTable();
+    renderWorkers();
+
+  </script>
+</body>
+</html>
